@@ -16,20 +16,20 @@ type  Account struct{
 	ID string 
 	Name  string 
 	Cpf    string 
-	Secret string 
+	Secret string // precisa ser armazenado como hash
 	Balance  int 
 	
 }
 
 
 func (ma *ManageAccount) CreateAccount(name string, cpf string) Account{
-	does_exist,existing_account := ma.Repo.FindAccountByCpf(cpf)
-		if does_exist {
+	doesExist,existingAccount := ma.Repo.FindAccountByCpf(cpf)
+		if doesExist {
 			fmt.Printf("Account already exists")
-			return existing_account.(Account)
+			return existingAccount.(Account)
 		}
 	
-	new_account :=Account{
+	newAccount :=Account{
 		Name:      name,
 	Cpf:       cpf,
 	Balance:   0,
@@ -37,5 +37,5 @@ func (ma *ManageAccount) CreateAccount(name string, cpf string) Account{
 	Secret:    "uoo8h0",
 	} 
 	
-	return new_account
+	return newAccount
 }

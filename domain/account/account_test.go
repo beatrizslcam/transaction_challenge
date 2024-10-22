@@ -21,11 +21,11 @@ func (m *MockRepository) FindAccountByID(id string) (bool, interface{}) {
 	return m.FindAccountByIDFunc(id)
 }
 
-func mocking(is_created bool, account account.Account) *MockRepository {
-	return &MockRepository{
-		FindAccountByCpfFunc: func(cpf string) (bool, interface{}) {
-			return is_created, account
-		},
+func mockingFindByCpf(is_created bool, account account.Account) *MockRepository {
+    return &MockRepository{
+        FindAccountByCpfFunc: func(cpf string) (bool, interface{}) {
+            return is_created, account
+	    },
 	}
 }
 
@@ -33,11 +33,11 @@ func mocking(is_created bool, account account.Account) *MockRepository {
  func TestCreateAccount(t *testing.T){
 	t.Run("create account", func(t *testing.T){
 		
-		mock_account := mocking(false, account.Account{})
-		manage_account := account.ManageAccount{Repo: mock_account}
+		mockAccount := mockingFindByCpf(false, account.Account{})
+		manageAccount := account.ManageAccount{Repo: mockAccount}
 
 
-		result := manage_account.CreateAccount("Maria", "12345")
+		result := manageAccount.CreateAccount("Maria", "12345")
 		expect := account.Account{"ugiugiu","Maria", "12345","uoo8h0",0}
 
 		if !reflect.DeepEqual(result, expect){
@@ -46,10 +46,10 @@ func mocking(is_created bool, account account.Account) *MockRepository {
 	})
 	t.Run("Account already exists", func(t *testing.T){
 		
-		mock_account := mocking(true, account.Account{"ugiugi","Ana", "17995","uoo8h0",100})
-		manage_account := account.ManageAccount{Repo: mock_account}
+		mockAccount := mockingFindByCpf(true, account.Account{"ugiugi","Ana", "17995","uoo8h0",100})
+		manageAccount := account.ManageAccount{Repo: mockAccount}
 
-		result := manage_account.CreateAccount("Ana", "17995")
+		result := manageAccount.CreateAccount("Ana", "17995")
 		expect := account.Account{"ugiugiu","Ana", "17995","uoo8h0",100}
 
 		if !reflect.DeepEqual(result, expect){
