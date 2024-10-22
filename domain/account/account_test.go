@@ -29,6 +29,16 @@ func mockingFindByCpf(is_created bool, account account.Account) *MockRepository 
 	}
 }
 
+func mokingFindByID(isCreated bool, account account.Account) *MockRepository{
+	return &MockRepository{
+		FindAccountByIDFunc: func(id string) (bool, interface{}) {
+			return isCreated, account
+		},
+	}
+}
+
+
+
 
  func TestCreateAccount(t *testing.T){
 	t.Run("create account", func(t *testing.T){
@@ -57,4 +67,30 @@ func mockingFindByCpf(is_created bool, account account.Account) *MockRepository 
 		}
 	})
 	
+ }
+ func TestGetAccount(t *testing.T){
+	t.Run("Get acounnt", func(t *testing.T){
+		mockAccount := mokingFindByID(true, account.Account{"ugiugiu","Ana", "17995","uoo8h0",100})
+		manageAccount := account.ManageAccount{Repo: mockAccount}
+
+		result := manageAccount.GetAccount("ugiugiu")
+		expect := account.Account{"ugiugiu","Ana", "17995","uoo8h0",100}
+
+		if !reflect.DeepEqual(result, expect){
+			t.Errorf("got %v want %v", result,expect)
+		}
+
+	})
+	t.Run("Account not Found", func(t *testing.T){
+		mockAccount := mokingFindByID(true, account.Account{})
+		manageAccount := account.ManageAccount{Repo: mockAccount}
+
+		result := manageAccount.GetAccount("ugiugiu")
+		expect := account.Account{}
+
+		if !reflect.DeepEqual(result, expect){
+			t.Errorf("got %v want %v", result,expect)
+		}
+
+	})
  }

@@ -39,3 +39,16 @@ func (ma *ManageAccount) CreateAccount(name string, cpf string) Account{
 	
 	return newAccount
 }
+
+func (ma *ManageAccount) GetAccount(id string) Account{
+	doesExist,existingAccount := ma.Repo.FindAccountByID(id)
+		if doesExist {
+			return existingAccount.(Account)
+		}
+		return Account{}
+}
+
+//List Accounts
+
+
+// GetBalance
