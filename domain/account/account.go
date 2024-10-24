@@ -21,7 +21,7 @@ type  Account struct{
 	
 }
 
-
+//TODO: armazenar uma secret como hash
 func (ma *ManageAccount) CreateAccount(name string, cpf string) Account{
 	doesExist,existingAccount := ma.Repo.FindAccountByCpf(cpf)
 		if doesExist {
@@ -48,7 +48,22 @@ func (ma *ManageAccount) GetAccount(id string) Account{
 		return Account{}
 }
 
-//List Accounts
+
+func (ma *ManageAccount) ListAccounts() []Account {
+	accountsList := ma.Repo.ListAccounts()
+	var result []Account
+	for _, acc := range accountsList {
+		result = append(result, acc.(Account))
+	}
+	return result
+}
 
 
-// GetBalance
+
+func (ma *ManageAccount) GetBalance(id string) int {	
+	doesExist,existingAccount := ma.Repo.FindAccountByID(id)
+	if doesExist {
+		return existingAccount.(Account).Balance
+	}
+	return -1
+}
