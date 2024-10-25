@@ -4,63 +4,62 @@ import (
 	"reflect"
 	"testing"
 	"transactions/domain/account"
+	"transactions/entity"
 )
  
 
 
 
 type MockRepository struct{
-	findAccountByCpfFunc func(cpf string) (bool, interface{})
-	findAccountByIDFunc  func(id string) (bool, interface{})
-	listAccountsFunc func()([]interface{})
-	getBalanceFunc func(id string)(balance int)
+	findAccountByCpfFunc func(string) (bool, entity.Account)
+	findAccountByIDFunc  func(string) (bool, entity.Account)
+	listAccountsFunc func()([]entity.Account)
+	getBalanceFunc func(string)(int)
 }
 
-func (m *MockRepository) ListAccounts() []interface{} {
+func (m *MockRepository) ListAccounts() []entity.Account {
 	return m.listAccountsFunc()
 }
-func (m *MockRepository) FindAccountByCpf(cpf string) (bool, interface{}) {
+func (m *MockRepository) FindAccountByCpf(cpf string) (bool, entity.Account) {
 	return m.findAccountByCpfFunc(cpf)
 }
 
-func (m *MockRepository) FindAccountByID(id string) (bool, interface{}) {
+func (m *MockRepository) FindAccountByID(id string) (bool, entity.Account) {
 	return m.findAccountByIDFunc(id)
 }
 
-func  (m *MockRepository) GetBalance(id string) interface{} {
+func  (m *MockRepository) GetBalance(id string) int{
 	return m.getBalanceFunc(id)
 }
 
-func mockingListAccounts(accounts []account.Account) *MockRepository {
+func mockingListAccounts(accounts []entity.Account) *MockRepository {
     return &MockRepository{
-        listAccountsFunc: func() ([]interface{}) {
+        listAccountsFunc: func() ([]entity.Account) {
 			return accounts
 	    },
 	}
 }
 
-
-
-func  mockingGetBalance(account account.Account,id string) *MockRepository{
-	return &MockRepository{
-		getBalanceFunc: func(id string) (balance int){
-			return account.Balance
-		},
-	}
-}
-
-func mockingFindByCpf(is_created bool, account account.Account) *MockRepository {
+func mockingFindByCpf(is_created bool, account entity.Account) *MockRepository {
     return &MockRepository{
-        findAccountByCpfFunc: func(cpf string) (bool, interface{}) {
+        findAccountByCpfFunc: func(string) (bool, entity.Account) {
             return is_created, account
 	    },
 	}
 }
 
-func mokingFindByID(isCreated bool, account account.Account) *MockRepository{
+func mokingFindByID(isCreated bool, account entity.Account) *MockRepository{
 	return &MockRepository{
-		findAccountByIDFunc: func(id string) (bool, interface{}) {
+		findAccountByIDFunc: func(string) (bool, entity.Account) {
 			return isCreated, account
+		},
+	}
+}
+
+func  mockingGetBalance(account entity.Account) *MockRepository{
+	return &MockRepository{
+		getBalanceFunc: func(string) (int){
+			return account.Balance
 		},
 	}
 }
@@ -69,12 +68,12 @@ func mokingFindByID(isCreated bool, account account.Account) *MockRepository{
 	t.Run("create account", func(t *testing.T){
 		t.Parallel()
 		
-		mockAccount := mockingFindByCpf(false, account.Account{})
+		mockAccount := mockingFindByCpf(false, entity.Account{})
 		manageAccount := account.ManageAccount{Repo: mockAccount}
 
 
 		result := manageAccount.CreateAccount("Maria", "12345")
-		expect := account.Account{"ugiugiu","Maria", "12345","uoo8h0",0}
+		expect := entity.Account{ID: "ugiugiu",Name: "Maria", Cpf: "12345",Secret: "uoo8h0",Balance: 0}
 
 		if !reflect.DeepEqual(result, expect){
 			t.Errorf("got %v want %v", result,expect)
@@ -83,11 +82,11 @@ func mokingFindByID(isCreated bool, account account.Account) *MockRepository{
 	t.Run("Account already exists", func(t *testing.T){
 		t.Parallel()
 		
-		mockAccount := mockingFindByCpf(true, account.Account{"ugiugi","Ana", "17995","uoo8h0",100})
+		mockAccount := mockingFindByCpf(true, entity.Account{ID: "ugiugiu",Name: "Ana", Cpf: "17995",Secret: "uoo8h0",Balance: 100})
 		manageAccount := account.ManageAccount{Repo: mockAccount}
 
 		result := manageAccount.CreateAccount("Ana", "17995")
-		expect := account.Account{"ugiugiu","Ana", "17995","uoo8h0",100}
+		expect := entity.Account{ID: "ugiugiu",Name: "Ana", Cpf: "17995",Secret: "uoo8h0",Balance: 100}
 
 		if !reflect.DeepEqual(result, expect){
 			t.Errorf("got %v want %v", result,expect)
@@ -100,11 +99,11 @@ func mokingFindByID(isCreated bool, account account.Account) *MockRepository{
 	t.Run("Get acounnt", func(t *testing.T){
 		t.Parallel()
 
-		mockAccount := mokingFindByID(true, account.Account{"ugiugiu","Ana", "17995","uoo8h0",100})
+		mockAccount := mokingFindByID(true, entity.Account{ID: "ugiugiu", Name: "Ana", Cpf: "17995", Secret: "uoo8h0", Balance: 100})
 		manageAccount := account.ManageAccount{Repo: mockAccount}
 
 		result := manageAccount.GetAccount("ugiugiu")
-		expect := account.Account{"ugiugiu","Ana", "17995","uoo8h0",100}
+		expect := entity.Account{ID: "ugiugiu", Name: "Ana", Cpf: "17995", Secret: "uoo8h0", Balance: 100}
 
 		if !reflect.DeepEqual(result, expect){
 			t.Errorf("got %v want %v", result,expect)
@@ -114,11 +113,11 @@ func mokingFindByID(isCreated bool, account account.Account) *MockRepository{
 	t.Run("Account not Found", func(t *testing.T){
 		t.Parallel()
 
-		mockAccount := mokingFindByID(true, account.Account{})
+		mockAccount := mokingFindByID(true, entity.Account{})
 		manageAccount := account.ManageAccount{Repo: mockAccount}
 
 		result := manageAccount.GetAccount("ugiugiu")
-		expect := account.Account{}
+		expect := entity.Account{}
 
 		if !reflect.DeepEqual(result, expect){
 			t.Errorf("got %v want %v", result,expect)
@@ -131,9 +130,9 @@ func mokingFindByID(isCreated bool, account account.Account) *MockRepository{
 		t.Run("list accounts", func(t *testing.T){
 			t.Parallel()
 
-			mockedAccounts := []account.Account{
-				 account.Account{"ugiugiu","Ana", "17995","uoo8h0",100},
-				 account.Account{"tufuyuy","Maria", "12205","Aoo8h0",300},
+			mockedAccounts := []entity.Account{
+				{ID: "ugiugiu", Name: "Ana", Cpf: "17995", Secret: "uoo8h0", Balance: 100},
+				{ID: "tufuyuy", Name: "Maria", Cpf: "12205", Secret: "Aoo8h0", Balance: 300},
 			}
 			mockRepo := mockingListAccounts(mockedAccounts)
 			accountMap := account.ManageAccount{Repo: mockRepo}
@@ -152,7 +151,7 @@ func mokingFindByID(isCreated bool, account account.Account) *MockRepository{
 	t.Run("get balance", func(t *testing.T){
 		t.Parallel()
 
-		mockAccount := mockingGetBalance(account.Account{"ugiugiu","Ana", "17995","uoo8h0",100},"ugiugiu")
+		mockAccount := mockingGetBalance(entity.Account{ID: "tufuyuy", Name: "Maria", Cpf: "12205", Secret: "Aoo8h0", Balance: 300})
 		manageAccount := account.ManageAccount{Repo: mockAccount}
 
 		expect := 100

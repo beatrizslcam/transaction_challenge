@@ -2,34 +2,23 @@ package account
 
 import (
 	"fmt"
+	"transactions/entity"
 	"transactions/repository"
 ) 
-
-
 
 type ManageAccount struct{
 	Repo repository.Repository
 }
 
 
-type  Account struct{
-	ID string 
-	Name  string 
-	Cpf    string 
-	Secret string // precisa ser armazenado como hash
-	Balance  int 
-	
-}
-
-//TODO: armazenar uma secret como hash
-func (ma *ManageAccount) CreateAccount(name string, cpf string) Account{
+func (ma *ManageAccount) CreateAccount(name string, cpf string)entity.Account{
 	doesExist,existingAccount := ma.Repo.FindAccountByCpf(cpf)
 		if doesExist {
 			fmt.Printf("Account already exists")
-			return existingAccount.(Account)
+			return existingAccount
 		}
 	
-	newAccount :=Account{
+	newAccount :=entity.Account{
 		Name:      name,
 	Cpf:       cpf,
 	Balance:   0,
@@ -40,21 +29,20 @@ func (ma *ManageAccount) CreateAccount(name string, cpf string) Account{
 	return newAccount
 }
 
-func (ma *ManageAccount) GetAccount(id string) Account{
+func (ma *ManageAccount) GetAccount(id string)entity.Account{
 	doesExist,existingAccount := ma.Repo.FindAccountByID(id)
 		if doesExist {
-			return existingAccount.(Account)
+			return existingAccount
 		}
-		return Account{}
+		return entity.Account{}
 }
 
 
-func (ma *ManageAccount) ListAccounts() []Account {
+func (ma *ManageAccount) ListAccounts() []entity.Account{
 	accountsList := ma.Repo.ListAccounts()
-	var result []Account
-	for _, acc := range accountsList {
-		result = append(result, acc.(Account))
-	}
+	var result []entity.Account
+	result = append(result, accountsList...)
+	
 	return result
 }
 
@@ -63,7 +51,7 @@ func (ma *ManageAccount) ListAccounts() []Account {
 func (ma *ManageAccount) GetBalance(id string) int {	
 	doesExist,existingAccount := ma.Repo.FindAccountByID(id)
 	if doesExist {
-		return existingAccount.(Account).Balance
+		return existingAccount.Balance
 	}
 	return -1
 }
