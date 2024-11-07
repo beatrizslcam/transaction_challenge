@@ -14,7 +14,7 @@ import (
 	t.Run("create account", func(t *testing.T){
 		t.Parallel()
 		
-		mockAccount := service.MockingFindByCpf(false, entity.Account{})
+		mockAccount := service.MockingFindByCpf(true, entity.Account{})
 		manageAccount := account.ManageAccount{Repo: mockAccount}
 
 

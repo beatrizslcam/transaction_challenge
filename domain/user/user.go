@@ -12,7 +12,8 @@ import (
 	}
 
 type Users interface{
-	IsAuthenticated(token string)bool
+	IsAuthenticated(string)bool
+	CreatePassword(string) ([]byte, error)
 }
 
 type User struct{
@@ -21,14 +22,10 @@ type User struct{
 }
 
 
-
-func (ml *ManageLogin) IsAuthenticated(token string)bool{
-	return true
-}
 func CreatePassword(password string) ([]byte, error) {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err!=nil {
-		return nil, fmt.Errorf("Error when hashing password due to: %v", err)
+		return nil, fmt.Errorf("error when hashing password due to: %v", err)
 	}
 
 	return hashedPassword, nil

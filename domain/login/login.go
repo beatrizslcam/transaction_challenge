@@ -28,12 +28,12 @@ func (ml *ManageLogin) IsAuthenticated(token string)bool{
 
 
 
-func (ml *ManageLogin)Login(cpf string, secret string)string{
+func (ml *ManageLogin)Login(cpf string, password string)string{
 	found, userAccount := ml.Repo.FindAccountByCpf(cpf)
 	if !found {
 		return ""
 	} 
-	err := bcrypt.CompareHashAndPassword([]byte(secret),[]byte(userAccount.Secret))
+	err := bcrypt.CompareHashAndPassword([]byte(password),[]byte(userAccount.Secret))
 		if err!=nil {
 			fmt.Printf("Error comparing password: %v\n", err)
 			return ""
