@@ -31,9 +31,9 @@ func (ml *ManageLogin) IsAuthenticated(token string)bool{
 func (ml *ManageLogin)Login(cpf string, password string)string{
 	found, userAccount := ml.Repo.FindAccountByCpf(cpf)
 	if !found {
-		return ""
+		return "Accoun't doesn't exists"
 	} 
-	err := bcrypt.CompareHashAndPassword([]byte(password),[]byte(userAccount.Secret))
+	err := bcrypt.CompareHashAndPassword([]byte(userAccount.Secret),[]byte(password))
 		if err!=nil {
 			fmt.Printf("Error comparing password: %v\n", err)
 			return ""
