@@ -68,11 +68,9 @@ func (m *AtuhMock) GenerateToken(accountId string) string{
 	return m.generateTokenFunc(accountId)
 }
 
-func MockingGenerateToken(accountId string) *AtuhMock {
+func MockingGenerateToken(generateTokenFunc func(string)string) *AtuhMock {
 	return &AtuhMock{
-		generateTokenFunc: func(string) string {
-			return "eyJhbGciOiJIU.eyJzdWIiOiIxMNTE2MjM5MDIyfQ.SflKxwRJS6yJV_adQssw5c"
-		},
+		generateTokenFunc: generateTokenFunc,
 	}
 }
 
@@ -80,11 +78,9 @@ func (m *AtuhMock) ValidateToken(accountId string) bool{
 	return m.validateTokenFunc(accountId)
 }
 
-func MockingValidateToken(accountId string) *AtuhMock {
+func MockingValidateToken(validateTokenFunc func(string) bool) *AtuhMock {
 	return &AtuhMock{
-		validateTokenFunc: func(string) bool {
-			return true
-		},
+		validateTokenFunc:validateTokenFunc,
 	}
 }
 
