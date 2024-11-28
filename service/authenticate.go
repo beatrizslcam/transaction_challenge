@@ -56,3 +56,26 @@ func getJWTSecretKey() ([]byte) {
 	return jwtKey
 
 }
+
+func GetAccountIDFromToken(token string)(string, error){
+	jwtKey :=getJWTSecretKey()
+
+	claims := &jwt.RegisteredClaims{}
+	
+	parsedToken, err := jwt.ParseWithClaims(token, claims, func(token *jwt.Token)(interface{}, error){
+		return jwtKey, nil
+	})
+
+	if err != nil{
+		return "", err
+	}
+
+	if !parsedToken.Valid{
+		return "", err
+	}
+
+	return claims.Subject, nil
+
+
+
+}
