@@ -7,7 +7,7 @@ import (
 ) 
 
 type ManageAccount struct{
-	Repo repository.Repository
+	Repo repository.RepositoryAccount
 }
 
 
