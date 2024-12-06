@@ -11,20 +11,6 @@ import (
 	"github.com/google/uuid"
 )
 
-/*/transfers
-A entidade Transfer possui os seguintes atributos:
-
-Espera-se as seguintes ações:
-
-GET /transfers - obtém a lista de transferencias da usuaria autenticada.
-POST /transfers - faz transferencia de uma Account para outra.
-Regras para esta rota
-
-
-
-Caso Account de origem não tenha saldo, retornar um código de erro apropriado
-Atualizar o balance das contas*/
-
 type ManageTransfer struct{
 	RepoTransfer repository.RepositoryTransfer
 	RepoAccount repository.RepositoryAccount
@@ -44,34 +30,34 @@ func(mt *ManageTransfer)DoTransfer(token string,payload TransferPayload) error{
 		Repo: mt.RepoAccount, 
 	}
 	if !manageLogin.IsAuthenticated(token) {
-		return fmt.Errorf("Auth error")
+		return fmt.Errorf("auth error")
 		
 	}
 
 	//Get Account Origin
 	accountOriginID, err := service.GetAccountIDFromToken(token)
 	if err != nil {
-		return fmt.Errorf("Error getting account id from token")
+		return fmt.Errorf("error getting account id from token")
 		
 	}
 
 	exists,account := mt.RepoAccount.FindAccountByID(accountOriginID)
-		if exists == false {
-			return fmt.Errorf("Error couldn't find account")
+		if !exists {
+			return fmt.Errorf("error couldn't find account")
 		}
 
 
 	
 	// Validate if there is enough balance to transfer
 	if payload.Amount > account.Balance{
-		return fmt.Errorf("There is not enough amount for that transaction")
+		return fmt.Errorf("there is not enough amount for that transaction")
 		 
 	}
 
 	//Get Destination Account
 	exists,destinationAccount := mt.RepoAccount.FindAccountByID(payload.AccountDestinationId)
-		if exists == false {
-			return fmt.Errorf("Error couldn't find account")
+		if !exists{
+			return fmt.Errorf("error couldn't find account")
 		}
 
 		err = mt.updateBalance(account, destinationAccount, payload.Amount)
@@ -106,7 +92,7 @@ func(mt *ManageTransfer) ListTrasnfers(token string) ([]entity.Transfer, error) 
 		Repo: mt.RepoAccount, 
 	}
 	if !manageLogin.IsAuthenticated(token) {
-		return nil, fmt.Errorf("Auth error")
+		return nil, fmt.Errorf("auth error")
 		
 	}
 
@@ -114,7 +100,7 @@ func(mt *ManageTransfer) ListTrasnfers(token string) ([]entity.Transfer, error) 
 	//Get transfers
 	accountID, err := service.GetAccountIDFromToken(token)
 	if err != nil {
-		return nil, fmt.Errorf("Error getting account id from token")
+		return nil, fmt.Errorf("error getting account id from token")
 		
 	}
 	

@@ -8,7 +8,7 @@ import (
 )
 	
 	type ManageLogin struct{
-		Repo repository.Repository
+		Repo repository.RepositoryAccount
 	}
 
 type Users interface{

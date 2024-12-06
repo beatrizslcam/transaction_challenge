@@ -19,28 +19,30 @@ import (
 		t.Parallel()
 
 
-		mockRepo := service.MockingFindByCpf(true, entity.Account{ID: "12345", Secret: string(hashedPassword)})
-		mockAuth:= service.MockingGenerateToken(func(accountID string) string {
-            return "mockedToken"})
+		mockRepo,_ := service.MockingFindByCpf( entity.Account{ID: "12345", Secret: string(hashedPassword)})
+		mockAuth:= service.MockingGenerateToken(func(accountID string) (string, error){
+            return "mockedToken", nil})
 		
 		manageLogin := login.ManageLogin{Repo: mockRepo, Auth: mockAuth}
 
-		result := manageLogin.Login("12345", "#thisIsMyPassword")
+		result,_ := manageLogin.Login("12345", "#thisIsMyPassword")
 		expect := "mockedToken"
 
 		if result != expect {
 			t.Errorf("got %v want %v", result, expect)
 		}
 	})
-	t.Run("can't not login ", func(t *testing.T){
+	t.Run("password doesn't match ", func(t *testing.T){
 		t.Parallel()
 
 
-		mockRepo := service.MockingFindByCpf(true, entity.Account{ID: "12345", Secret: string(hashedPassword)})
-		
-		manageLogin := login.ManageLogin{Repo: mockRepo}
+		mockRepo,_ := service.MockingFindByCpf( entity.Account{ID: "12345", Secret: string(hashedPassword)})
+		mockAuth:= service.MockingGenerateToken(func(accountID string) (string, error){
+            return "mockedToken",nil})
 
-		result := manageLogin.Login("12345", "#thisISN'TMyPassword")
+		manageLogin := login.ManageLogin{Repo: mockRepo, Auth: mockAuth}
+
+		result,_ := manageLogin.Login("12345", "#thisISN'TMyPassword")
 		expect := ""
 
 		if result != expect {

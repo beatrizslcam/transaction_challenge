@@ -11,13 +11,15 @@ type ManageAccount struct{
 }
 
 
-func (ma *ManageAccount) CreateAccount(name string, cpf string)entity.Account{
-	doesExist,existingAccount := ma.Repo.FindAccountByCpf(cpf)
-		if doesExist {
-			fmt.Printf("Account already exists")
-			return existingAccount
+func (ma *ManageAccount) CreateAccount(name string, cpf string)(entity.Account, error){
+	existingAccount, err:= ma.Repo.FindAccountByCpf(cpf)
+		if err!= nil {
+			return existingAccount, fmt.Errorf("error while finding account due to: %v", err)
 		}
-	
+
+		if existingAccount.ID != "" {
+			return existingAccount, fmt.Errorf("account already exists")
+		}	
 	newAccount :=entity.Account{
 		Name:      name,
 	Cpf:       cpf,
@@ -26,32 +28,42 @@ func (ma *ManageAccount) CreateAccount(name string, cpf string)entity.Account{
 	Secret:    "uoo8h0",
 	} 
 	
-	return newAccount
+	return newAccount, nil
 }
 
-func (ma *ManageAccount) GetAccount(id string)entity.Account{
-	doesExist,existingAccount := ma.Repo.FindAccountByID(id)
-		if doesExist {
-			return existingAccount
-		}
-		return entity.Account{}
+func (ma *ManageAccount) GetAccount(id string)(entity.Account, error){
+	existingAccount, err:= ma.Repo.FindAccountByID(id)
+	if err!= nil {
+		return existingAccount, fmt.Errorf("error while getting account due to: %v", err)
+	}
+
+	if existingAccount.ID == "" {
+		return entity.Account{}, fmt.Errorf("account doesn't exists")
+	}
+		
+		return existingAccount, nil
 }
 
 
-func (ma *ManageAccount) ListAccounts() []entity.Account{
-	accountsList := ma.Repo.ListAccounts()
+func (ma *ManageAccount) ListAccounts() ([]entity.Account, error){
+	accountsList,err:= ma.Repo.ListAccounts()
+	if err!= nil {
+		return nil, fmt.Errorf("error while listing accounts due to: %v", err)
+	}
 	var result []entity.Account
 	result = append(result, accountsList...)
 	
-	return result
+	return result,nil
 }
 
 
 
-func (ma *ManageAccount) GetBalance(id string) int {	
-	doesExist,existingAccount := ma.Repo.FindAccountByID(id)
-	if doesExist {
-		return existingAccount.Balance
+func (ma *ManageAccount) GetBalance(id string) (int, error) {	
+	existingAccount,err := ma.Repo.FindAccountByID(id)
+	if err!= nil {
+		return -1, fmt.Errorf("error while listing accounts due to: %v", err)
 	}
-	return -1
+
+		return existingAccount.Balance, nil
+
 }

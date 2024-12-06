@@ -7,7 +7,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 type Auth interface{
-	GenerateToken(string) string
+	GenerateToken(string) (string,error)
 	ValidateToken(string)bool
 }
 func GenerateToken(accountID string) (string, error) {
