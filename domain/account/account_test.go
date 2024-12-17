@@ -5,70 +5,16 @@ import (
 	"testing"
 	"transactions/domain/account"
 	"transactions/entity"
+	"transactions/service"
 )
  
 
-
-
-type MockRepository struct{
-	findAccountByCpfFunc func(string) (bool, entity.Account)
-	findAccountByIDFunc  func(string) (bool, entity.Account)
-	listAccountsFunc func()([]entity.Account)
-	getBalanceFunc func(string)(int)
-}
-
-func (m *MockRepository) ListAccounts() []entity.Account {
-	return m.listAccountsFunc()
-}
-func (m *MockRepository) FindAccountByCpf(cpf string) (bool, entity.Account) {
-	return m.findAccountByCpfFunc(cpf)
-}
-
-func (m *MockRepository) FindAccountByID(id string) (bool, entity.Account) {
-	return m.findAccountByIDFunc(id)
-}
-
-func  (m *MockRepository) GetBalance(id string) int{
-	return m.getBalanceFunc(id)
-}
-
-func mockingListAccounts(accounts []entity.Account) *MockRepository {
-    return &MockRepository{
-        listAccountsFunc: func() ([]entity.Account) {
-			return accounts
-	    },
-	}
-}
-
-func mockingFindByCpf(is_created bool, account entity.Account) *MockRepository {
-    return &MockRepository{
-        findAccountByCpfFunc: func(string) (bool, entity.Account) {
-            return is_created, account
-	    },
-	}
-}
-
-func mokingFindByID(isCreated bool, account entity.Account) *MockRepository{
-	return &MockRepository{
-		findAccountByIDFunc: func(string) (bool, entity.Account) {
-			return isCreated, account
-		},
-	}
-}
-
-func  mockingGetBalance(account entity.Account) *MockRepository{
-	return &MockRepository{
-		getBalanceFunc: func(string) (int){
-			return account.Balance
-		},
-	}
-}
 
  func TestCreateAccount(t *testing.T){
 	t.Run("create account", func(t *testing.T){
 		t.Parallel()
 		
-		mockAccount := mockingFindByCpf(false, entity.Account{})
+		mockAccount := service.MockingFindByCpf(true, entity.Account{})
 		manageAccount := account.ManageAccount{Repo: mockAccount}
 
 
@@ -82,7 +28,7 @@ func  mockingGetBalance(account entity.Account) *MockRepository{
 	t.Run("Account already exists", func(t *testing.T){
 		t.Parallel()
 		
-		mockAccount := mockingFindByCpf(true, entity.Account{ID: "ugiugiu",Name: "Ana", Cpf: "17995",Secret: "uoo8h0",Balance: 100})
+		mockAccount := service.MockingFindByCpf(true, entity.Account{ID: "ugiugiu",Name: "Ana", Cpf: "17995",Secret: "uoo8h0",Balance: 100})
 		manageAccount := account.ManageAccount{Repo: mockAccount}
 
 		result := manageAccount.CreateAccount("Ana", "17995")
@@ -99,7 +45,7 @@ func  mockingGetBalance(account entity.Account) *MockRepository{
 	t.Run("Get acounnt", func(t *testing.T){
 		t.Parallel()
 
-		mockAccount := mokingFindByID(true, entity.Account{ID: "ugiugiu", Name: "Ana", Cpf: "17995", Secret: "uoo8h0", Balance: 100})
+		mockAccount := service.MockingFindByID(true, entity.Account{ID: "ugiugiu", Name: "Ana", Cpf: "17995", Secret: "uoo8h0", Balance: 100})
 		manageAccount := account.ManageAccount{Repo: mockAccount}
 
 		result := manageAccount.GetAccount("ugiugiu")
@@ -113,7 +59,7 @@ func  mockingGetBalance(account entity.Account) *MockRepository{
 	t.Run("Account not Found", func(t *testing.T){
 		t.Parallel()
 
-		mockAccount := mokingFindByID(true, entity.Account{})
+		mockAccount := service.MockingFindByID(true, entity.Account{})
 		manageAccount := account.ManageAccount{Repo: mockAccount}
 
 		result := manageAccount.GetAccount("ugiugiu")
@@ -134,7 +80,7 @@ func  mockingGetBalance(account entity.Account) *MockRepository{
 				{ID: "ugiugiu", Name: "Ana", Cpf: "17995", Secret: "uoo8h0", Balance: 100},
 				{ID: "tufuyuy", Name: "Maria", Cpf: "12205", Secret: "Aoo8h0", Balance: 300},
 			}
-			mockRepo := mockingListAccounts(mockedAccounts)
+			mockRepo := service.MockingListAccounts(mockedAccounts)
 			accountMap := account.ManageAccount{Repo: mockRepo}
 
 			expect := mockedAccounts
@@ -151,7 +97,7 @@ func  mockingGetBalance(account entity.Account) *MockRepository{
 	t.Run("get balance", func(t *testing.T){
 		t.Parallel()
 
-		mockAccount := mockingGetBalance(entity.Account{ID: "tufuyuy", Name: "Maria", Cpf: "12205", Secret: "Aoo8h0", Balance: 300})
+		mockAccount := service.MockingGetBalance(entity.Account{ID: "tufuyuy", Name: "Maria", Cpf: "12205", Secret: "Aoo8h0", Balance: 300})
 		manageAccount := account.ManageAccount{Repo: mockAccount}
 
 		expect := 100

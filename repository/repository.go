@@ -8,7 +8,7 @@ type Repository interface{
 	FindAccountByCpf(string) (bool, entity.Account)
 	FindAccountByID(string) (bool, entity.Account)
 	ListAccounts()([]entity.Account)
-	GetBalance(entity.Account) (int)
+	GetBalance(string) (int)
 }
 
 type Repo struct{
