@@ -100,7 +100,7 @@ import (
 	t.Run("get balance", func(t *testing.T){
 		t.Parallel()
 
-		mockAccount,_ := service.MockingGetBalance(entity.Account{ID: "tufuyuy", Name: "Maria", Cpf: "12205", Secret: "Aoo8h0", Balance: 300})
+		mockAccount,_ := service.MockingGetBalance(entity.Account{ID: "ugiugiu", Name: "Ana", Cpf: "17995", Secret: "uoo8h0", Balance: 100})
 		manageAccount := account.ManageAccount{Repo: mockAccount}
 
 		expect := 100

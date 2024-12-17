@@ -41,8 +41,8 @@ func(mt *ManageTransfer)DoTransfer(token string,payload TransferPayload) error{
 		
 	}
 
-	exists,account := mt.RepoAccount.FindAccountByID(accountOriginID)
-		if !exists {
+	account, err := mt.RepoAccount.FindAccountByID(accountOriginID)
+		if err != nil{
 			return fmt.Errorf("error couldn't find account")
 		}
 
@@ -55,8 +55,8 @@ func(mt *ManageTransfer)DoTransfer(token string,payload TransferPayload) error{
 	}
 
 	//Get Destination Account
-	exists,destinationAccount := mt.RepoAccount.FindAccountByID(payload.AccountDestinationId)
-		if !exists{
+	destinationAccount, err := mt.RepoAccount.FindAccountByID(payload.AccountDestinationId)
+		if err != nil{
 			return fmt.Errorf("error couldn't find account")
 		}
 
@@ -79,13 +79,15 @@ func(mt *ManageTransfer)DoTransfer(token string,payload TransferPayload) error{
 		return fmt.Errorf("failed to create Transfer due to: %w", err)
 	 }
 
+	 fmt.Print("Transfer done with success!")
+
 	return nil
 
 
 }	
 
 
-func(mt *ManageTransfer) ListTrasnfers(token string) ([]entity.Transfer, error) {
+func(mt *ManageTransfer) ListTransfers(token string) ([]entity.Transfer, error) {
 	//Authenticate
 	manageLogin := login.ManageLogin{
 		Auth: mt.Auth,
@@ -96,7 +98,6 @@ func(mt *ManageTransfer) ListTrasnfers(token string) ([]entity.Transfer, error) 
 		
 	}
 
-
 	//Get transfers
 	accountID, err := service.GetAccountIDFromToken(token)
 	if err != nil {
@@ -104,7 +105,11 @@ func(mt *ManageTransfer) ListTrasnfers(token string) ([]entity.Transfer, error) 
 		
 	}
 	
-	transfers := mt.RepoTransfer.ListTransfers(accountID)
+	transfers,err := mt.RepoTransfer.ListTransfers(accountID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to list transfers: %w", err)
+	}
+	
 	return transfers, nil
 }
 

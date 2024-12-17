@@ -61,7 +61,7 @@ func (ma *ManageAccount) ListAccounts() ([]entity.Account, error){
 func (ma *ManageAccount) GetBalance(id string) (int, error) {	
 	existingAccount,err := ma.Repo.FindAccountByID(id)
 	if err!= nil {
-		return -1, fmt.Errorf("error while listing accounts due to: %v", err)
+		return -1, fmt.Errorf("error while get balance due to: %v", err)
 	}
 
 		return existingAccount.Balance, nil

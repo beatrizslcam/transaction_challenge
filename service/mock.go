@@ -5,12 +5,12 @@ import (
 	"transactions/entity"
 )
 
-type AccountMockRepository struct{
-	findAccountByCpfFunc func(string) (entity.Account,error)
-	findAccountByIDFunc  func(string) (entity.Account,error)
-	listAccountsFunc func()([]entity.Account,error)
-	getBalanceFunc func(string)(int,error)
-	updateAccountFunc func(entity.Account) error
+type AccountMockRepository struct {
+    findAccountByCpfFunc func(string) (entity.Account, error)
+    findAccountByIDFunc  func(string) (entity.Account, error)
+    listAccountsFunc     func() ([]entity.Account, error)
+    getBalanceFunc       func(string) (int, error)
+    updateAccountFunc    func(entity.Account) error
 }
 
 func (m *AccountMockRepository) ListAccounts() ([]entity.Account,error) {
@@ -41,10 +41,6 @@ func (m *AccountMockRepository) FindAccountByID(id string) (entity.Account,error
 }
 
 
-func  (m *AccountMockRepository) GetBalance(id string) (int, error){
-	return m.getBalanceFunc(id)
-}
-
 func MockingFindByID( account entity.Account) (*AccountMockRepository, error){
 	return &AccountMockRepository{
 		findAccountByIDFunc: func(string) (entity.Account, error) {
@@ -52,6 +48,12 @@ func MockingFindByID( account entity.Account) (*AccountMockRepository, error){
 		},
 	}, nil
 }
+
+
+func  (m *AccountMockRepository) GetBalance(id string) (int, error){
+	return m.getBalanceFunc(id)
+}
+
 func  MockingGetBalance(account entity.Account) (*AccountMockRepository, error){
 	return &AccountMockRepository{
 		getBalanceFunc: func(string) (int, error){
