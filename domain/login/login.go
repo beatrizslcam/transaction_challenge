@@ -9,7 +9,7 @@ import (
 )
 	
 	type ManageLogin struct{
-		Repo repository.Repository
+		Repo repository.RepositoryAccount
 		Auth service.Auth
 	}
 
@@ -28,24 +28,25 @@ func (ml *ManageLogin) IsAuthenticated(token string)bool{
 
 
 
-func (ml *ManageLogin)Login(cpf string, password string)string{
-	found, userAccount := ml.Repo.FindAccountByCpf(cpf)
-	if !found {
-		return "Accoun't doesn't exists"
+func (ml *ManageLogin)Login(cpf string, password string)(string,error){
+	
+	 userAccount,err := ml.Repo.FindAccountByCpf(cpf)
+	if err != nil {
+		return "", fmt.Errorf("account doesn't exist")
 	} 
-	err := bcrypt.CompareHashAndPassword([]byte(userAccount.Secret),[]byte(password))
-		if err!=nil {
-			fmt.Printf("Error comparing password: %v\n", err)
-			return ""
-		}
 
-		token,err := service.GenerateToken(userAccount.ID)
-		if err!= nil{
-			fmt.Println("Error generating token")
-			return ""
-		}
+	//Validate Password
+	password_err := bcrypt.CompareHashAndPassword([]byte(userAccount.Secret),[]byte(password))
+	if password_err!=nil {
+		return "", fmt.Errorf("error comparing password: %v", err)
+	}
 
-		return token
+	token, token_err:= ml.Auth.GenerateToken(userAccount.ID)
+	if token_err!= nil{
+		return "", fmt.Errorf("error generating token")
+	}
+
+	return token, nil
 	
 
 

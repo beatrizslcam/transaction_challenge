@@ -7,7 +7,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 type Auth interface{
-	GenerateToken(string) string
+	GenerateToken(string) (string,error)
 	ValidateToken(string)bool
 }
 func GenerateToken(accountID string) (string, error) {
@@ -54,5 +54,28 @@ func getJWTSecretKey() ([]byte) {
 	jwtKey := []byte(cfg.JWTSecret)
 
 	return jwtKey
+
+}
+
+func GetAccountIDFromToken(token string)(string, error){
+	jwtKey :=getJWTSecretKey()
+
+	claims := &jwt.RegisteredClaims{}
+	
+	parsedToken, err := jwt.ParseWithClaims(token, claims, func(token *jwt.Token)(interface{}, error){
+		return jwtKey, nil
+	})
+
+	if err != nil{
+		return "", err
+	}
+
+	if !parsedToken.Valid{
+		return "", err
+	}
+
+	return claims.Subject, nil
+
+
 
 }
