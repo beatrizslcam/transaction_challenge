@@ -1,6 +1,7 @@
 package service
 
 import (
+	"errors"
 	"fmt"
 	"transactions/entity"
 )
@@ -51,15 +52,19 @@ func MockingFindByID( account entity.Account) (*AccountMockRepository, error){
 
 
 func  (m *AccountMockRepository) GetBalance(id string) (int, error){
-	return m.getBalanceFunc(id)
+	balance, err := m.getBalanceFunc(id)
+	return balance, err
 }
 
 func  MockingGetBalance(account entity.Account) (*AccountMockRepository, error){
 	return &AccountMockRepository{
-		getBalanceFunc: func(string) (int, error){
-			return account.Balance, nil
-		},
-	}, nil
+        findAccountByIDFunc: func(id string) (entity.Account, error) {
+            if account.ID == "" {
+                return entity.Account{}, errors.New("account not found")
+            }
+            return account, nil
+        },
+    }, nil
 }
 
 
