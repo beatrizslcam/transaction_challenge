@@ -117,11 +117,13 @@ func(mt *ManageTransfer) ListTransfers(token string) ([]entity.Transfer, error) 
 func (mt *ManageTransfer) updateBalance(accountOrigin entity.Account, accountDestination entity.Account, amount int) error {
 	accountOrigin.Balance -= amount
 	accountDestination.Balance += amount
-
-	if err := mt.RepoAccount.UpdateAccount(accountOrigin); err != nil {
+	err := mt.RepoAccount.UpdateBalanceAccount(accountOrigin.id, accountOrigin.Balance)
+	if err != nil {
 		return  fmt.Errorf("failed to update origin account: %w", err)
 	}
-	if err := mt.RepoAccount.UpdateAccount(accountDestination); err != nil {
+	err := mt.RepoAccount.UpdateBalanceAccount(accountDestination.id, accountDestination.Balance);
+	
+	if  err != nil {
 		return fmt.Errorf("failed to update destination account: %w", err)
 	}
 
