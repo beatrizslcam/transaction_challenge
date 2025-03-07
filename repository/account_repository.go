@@ -1,4 +1,4 @@
-package repositories
+package repository
 
 import (
 	"context"
@@ -33,7 +33,7 @@ func (r *AccountRepo) FindAccountByID(id string) (entity.Account, error) {
 	var account entity.Account
 	err := row.Scan(&account.ID, &account.Name, &account.Cpf, &account.Secret, &account.Balance)
 	if err != nil {
-		fmt.Errorf("failed get account  due to: %w", err)
+		fmt.Errorf("failed get account  due to: %s", err)
 		return entity.Account{}, err
 	}
 
@@ -53,20 +53,20 @@ func (r *AccountRepo) ListAccounts() ([]entity.Account, error) {
 		var account entity.Account
 		err := rows.Scan(&account.ID, &account.Name, &account.Cpf, &account.Secret, &account.Balance)
 		if err != nil {
-			fmt.Errorf("failed to list accounts due to: %w", err)
+			fmt.Errorf("failed to list accounts due to: %s", err)
 			return nil, err
 		}
 		accounts = append(accounts, account)
 	}
 	if err = rows.Err(); err != nil {
-		fmt.Errorf("failed to list accounts due to: %w", err)
+		fmt.Errorf("failed to list accounts due to: %s", err)
 		return nil, err
 	}
 
 	return accounts, nil
 }
 
-func (r *Repo) UpdateAccount(id string, balance int) error {
+func (r *AccountRepo) UpdateAccount(id string, balance int) error {
 	query := "Update accounts set balance = $1 where id = $2"
 	_, err := r.Pool.Exec(context.Background(), query, id)
 	if err != nil {

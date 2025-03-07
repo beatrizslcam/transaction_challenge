@@ -5,7 +5,7 @@ import (
 	"time"
 	"transactions/domain/login"
 	"transactions/entity"
-	"transactions/repository"
+	"transactions/repository/"
 	"transactions/service"
 
 	"github.com/google/uuid"
@@ -67,7 +67,7 @@ func(mt *ManageTransfer)DoTransfer(token string,payload TransferPayload) error{
 
 	//Create Transfer
 	transfer := entity.Transfer{
-		Id:                  uuid.New().String(),
+		ID:                  uuid.New().String(),
 		AccountOriginId:     accountOriginID,
 		AccountDestinationId: payload.AccountDestinationId,
 		Amount:              payload.Amount,
@@ -117,11 +117,11 @@ func(mt *ManageTransfer) ListTransfers(token string) ([]entity.Transfer, error) 
 func (mt *ManageTransfer) updateBalance(accountOrigin entity.Account, accountDestination entity.Account, amount int) error {
 	accountOrigin.Balance -= amount
 	accountDestination.Balance += amount
-	err := mt.RepoAccount.UpdateBalanceAccount(accountOrigin.id, accountOrigin.Balance)
+	err := mt.RepoAccount.UpdateBalanceAccount(accountOrigin.ID, accountOrigin.Balance)
 	if err != nil {
 		return  fmt.Errorf("failed to update origin account: %w", err)
 	}
-	err := mt.RepoAccount.UpdateBalanceAccount(accountDestination.id, accountDestination.Balance);
+	err = mt.RepoAccount.UpdateBalanceAccount(accountDestination.ID, accountDestination.Balance)
 	
 	if  err != nil {
 		return fmt.Errorf("failed to update destination account: %w", err)
