@@ -4,20 +4,17 @@ import (
 	"transactions/entity"
 )
 
-type RepositoryAccount interface{
-	FindAccountByCpf(string) (entity.Account,error)
+type RepositoryAccount interface {
+	FindAccountByCpf(string) (entity.Account, error)
 	FindAccountByID(string) (entity.Account, error)
-	ListAccounts()([]entity.Account, error)
-	GetBalance(string) (int,error)
-	UpdateAccount(entity.Account) error
+	ListAccounts() ([]entity.Account, error)
+	UpdateBalanceAccount(string, int) error
 }
 
-type RepositoryTransfer interface{
+type RepositoryTransfer interface {
 	CreateTransfer(entity.Transfer) error
-	ListTransfers(string)([]entity.Transfer, error)
+	ListTransfers(string) ([]entity.Transfer, error)
 }
 
-type Repo struct{
 
-}
 

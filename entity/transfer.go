@@ -3,7 +3,7 @@ package entity
 import "time"
 
 type Transfer struct{
-	Id string
+	ID string
 	AccountOriginId string
 	AccountDestinationId string
 	Amount int
